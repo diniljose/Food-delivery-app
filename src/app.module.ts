@@ -24,7 +24,7 @@ import { Envconfig } from './helper/env.config';
       envFilePath: Envconfig.local
     }),
 
-    MongooseModule.forRoot(process.env.DATABASE),
+    MongooseModule.forRoot(process.env.MONGODB_URI),
     AppMongooseModule,
     GlobalCategoryModule,
     SubcategoryModule,
