@@ -12,11 +12,20 @@ import { ProductModule } from './customer/product/product.module';
 import { SubcategoryModule } from './customer/subcategory/subcategory.module';
 import { UserAuthModule } from './customer/user-auth/user-auth.module';
 import { UsersModule } from './users/users.module';
+import { AdminAuthModule } from './admin/admin-auth/admin-auth.module';
+import { AppMongooseModule } from './resources/db.config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Envconfig } from './helper/env.config';
 
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      envFilePath: Envconfig.local
+    }),
+
+    MongooseModule.forRoot(process.env.DATABASE),
+    AppMongooseModule,
     GlobalCategoryModule,
     SubcategoryModule,
     ProductCategoryModule,
@@ -27,6 +36,7 @@ import { UsersModule } from './users/users.module';
     AnalyticsModule,
     AuthModule,
     UsersModule,
+    AdminAuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

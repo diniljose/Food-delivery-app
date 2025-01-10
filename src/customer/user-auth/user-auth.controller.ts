@@ -1,15 +1,41 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, HttpStatus } from '@nestjs/common';
 import { UserAuthService } from './user-auth.service';
 import { CreateUserAuthDto } from './dto/create-user-auth.dto';
 import { UpdateUserAuthDto } from './dto/update-user-auth.dto';
+import { FastifyReply, FastifyRequest } from 'fastify';
+import { ResponseService } from 'src/services/response.service';
 
 @Controller('user-auth')
 export class UserAuthController {
-  constructor(private readonly userAuthService: UserAuthService) {}
+  constructor(
+    private readonly userAuthService: UserAuthService,
+    private readonly responseService: ResponseService,
+    ) {}
 
-  @Post()
-  create(@Body() createUserAuthDto: CreateUserAuthDto) {
-    return this.userAuthService.create(createUserAuthDto);
+
+
+  @Post('UserSignUp')
+  async signUpApplicant(
+    @Body() dto: CreateUserAuthDto,
+    @Req() req: FastifyRequest,
+    @Res() res: FastifyReply,
+  ): Promise<any> {
+    try {
+      // Check if mobileNoCountryCode is defined before calling toUpperCase
+      dto.email = dto.email.toLowerCase();
+      
+
+      // Pass the DTO to the service
+      const signUpResponse = await this.userAuthService.signUpUser(dto);
+
+      return res
+        .status(HttpStatus.OK)
+        .send(
+          this.responseService.sendSuccessResponse({ data: signUpResponse }),
+        );
+    } catch (error) {
+      return this.responseService.handleError(res, error);
+    }
   }
 
   @Get()

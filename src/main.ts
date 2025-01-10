@@ -1,11 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {
-  NestFastifyApplication,
-  FastifyAdapter,
-} from '@nestjs/platform-fastify';
-import { globalSetupValidations } from './resources/secuirities';
-
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { globalSetupValidations, setUpCookies, setupCors, setupHelmets } from './resources/secuirities';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -15,13 +11,16 @@ async function bootstrap() {
     }),
   );
 
+  //await trackSecurity(app); //very trackcode in middleware
   await globalSetupValidations(app);
-
+  //await setupSwagger(app);
+  await setUpCookies(app);
   try {
-    
+    await Promise.all([setupCors(app), setupHelmets(app)]);
     await app.listen(process.env.PORT, '');
   } catch (error) {
     console.error('Error during bootstrap:', error);
   }
 }
+
 bootstrap();

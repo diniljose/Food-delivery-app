@@ -1,12 +1,53 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserAuthDto } from './dto/create-user-auth.dto';
 import { UpdateUserAuthDto } from './dto/update-user-auth.dto';
+import { ResponseService } from 'src/services/response.service';
+import { AuthService } from 'src/auth/auth.service';
+import { UserSignUp } from 'src/schemas/user-auth.scehma';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class UserAuthService {
-  create(createUserAuthDto: CreateUserAuthDto) {
-    return 'This action adds a new userAuth';
+  constructor(
+    private readonly responseService: ResponseService,
+    private readonly auth: AuthService,
+    
+  @InjectModel(UserSignUp.name) private UserSignUpModel: Model<UserSignUp>,
+
+    ){}
+
+  async signUpUser(dto: CreateUserAuthDto): Promise<{ message: string }> {
+    try {
+      const existingApplicant = await this.UserSignUpModel
+        .findOne({ email: dto.email })
+        .exec();
+      if (existingApplicant) {
+        throw new BadRequestException({
+          englishMessage:
+            'An applicant with email already exists. Please sign in.',
+          arabicMessage:
+            'يوجد متقدم بالفعل بنفس البريد الإلكتروني. الرجاء تسجيل الدخول.',
+        });
+      }
+      dto.password = await this.auth.hashPassword(dto.password);
+      // dto.applicantId = generateUniqueCode(dto.givenName, 4);
+      const newApplicant = new this.UserSignUpModel(dto);
+      const savedApplicant = await newApplicant.save();
+      if (!savedApplicant) {
+        throw new BadRequestException({
+          englishMessage: 'Error while creating applicant.',
+          arabicMessage: 'حدث خطأ أثناء إنشاء المتقدم.',
+        });
+
+        // throw new BadRequestException('Error while creating applicant');
+      }
+      return { message: 'Sign up successful' };
+    } catch (error) {
+      this.responseService.handleErrorservice(error);
+    }
   }
+
 
   findAll() {
     return `This action returns all userAuth`;
