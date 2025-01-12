@@ -13,8 +13,7 @@
       }
     ],
     "env": {
-      "MONGODB_URI": "@MONGODB_URI"
-    },
-    "outputDirectory": "./"
+      "MONGODB_URI": "mongodb+srv://vercel-admin-user:DU0I3chNgIXqtMqh@cluster0.asx3b.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+    }
   }
   
