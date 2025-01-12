@@ -10,7 +10,6 @@ import { OrderModule } from './customer/order/order.module';
 import { ProductCategoryModule } from './customer/product-category/product-category.module';
 import { ProductModule } from './customer/product/product.module';
 import { SubcategoryModule } from './customer/subcategory/subcategory.module';
-import { UserAuthModule } from './customer/user-auth/user-auth.module';
 import { UsersModule } from './users/users.module';
 import { AdminAuthModule } from './admin/admin-auth/admin-auth.module';
 import { AppMongooseModule } from './resources/db.config';
@@ -33,7 +32,6 @@ import { ResponseService } from './services/response/response.service';
     SubcategoryModule,
     ProductCategoryModule,
     ProductModule,
-    UserAuthModule,
     CartModule,
     OrderModule,
     AnalyticsModule,

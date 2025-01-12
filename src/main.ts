@@ -17,7 +17,7 @@ async function bootstrap() {
   await setUpCookies(app);
   try {
     await Promise.all([setupCors(app), setupHelmets(app)]);
-    await app.listen(process.env.PORT, '');
+    await app.listen(3000, '0.0.0.0');
   } catch (error) {
     console.error('Error during bootstrap:', error);
   }
