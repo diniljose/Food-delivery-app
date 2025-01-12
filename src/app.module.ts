@@ -16,6 +16,8 @@ import { AdminAuthModule } from './admin/admin-auth/admin-auth.module';
 import { AppMongooseModule } from './resources/db.config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Envconfig } from './helper/env.config';
+import { AuthService } from './auth/auth.service';
+import { ResponseService } from './services/response/response.service';
 
 
 @Module({
@@ -40,6 +42,6 @@ import { Envconfig } from './helper/env.config';
     AdminAuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,ResponseService,AuthService],
 })
 export class AppModule {}

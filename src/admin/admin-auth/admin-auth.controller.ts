@@ -1,12 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, Req, Res } from '@nestjs/common';
 import { AdminAuthService } from './admin-auth.service';
 import { AdminForgotPasswordDto, AdminSignInDto, AdminSignUpDto } from './dto/create-admin-auth.dto';
-import { ResponseService } from 'src/services/response.service';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthService } from 'src/auth/auth.service';
 import { AdminSignUp } from 'src/schemas/admin-auth.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ResponseService } from 'src/services/response/response.service';
 
 @Controller('admin-auth')
 export class AdminAuthController {

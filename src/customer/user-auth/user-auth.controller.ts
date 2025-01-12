@@ -3,7 +3,7 @@ import { UserAuthService } from './user-auth.service';
 import { CreateUserAuthDto } from './dto/create-user-auth.dto';
 import { UpdateUserAuthDto } from './dto/update-user-auth.dto';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { ResponseService } from 'src/services/response.service';
+import { ResponseService } from 'src/services/response/response.service';
 
 @Controller('user-auth')
 export class UserAuthController {
