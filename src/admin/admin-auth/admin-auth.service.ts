@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AdminSignUpDto } from './dto/create-admin-auth.dto';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../../auth/auth.service';
 import * as jwt from 'jsonwebtoken';
 import { InjectModel } from '@nestjs/mongoose';
 import { AdminSignUp } from '../../schemas/admin-auth.schema';
