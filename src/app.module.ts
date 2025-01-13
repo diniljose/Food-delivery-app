@@ -13,7 +13,6 @@ import { SubcategoryModule } from './customer/subcategory/subcategory.module';
 import { UserAuthModule } from './customer/user-auth/user-auth.module';
 import { UsersModule } from './users/users.module';
 import { AdminAuthModule } from './admin/admin-auth/admin-auth.module';
-import { AppMongooseModule } from './resources/db.config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Envconfig } from './helper/env.config';
 import { AuthService } from './auth/auth.service';
@@ -27,7 +26,6 @@ import { ResponseService } from './services/response/response.service';
     }),
   
     MongooseModule.forRoot(process.env.MONGODB_URI),
-    AppMongooseModule,
     GlobalCategoryModule,
     SubcategoryModule,
     ProductCategoryModule,

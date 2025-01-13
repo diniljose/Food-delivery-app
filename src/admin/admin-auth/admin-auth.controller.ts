@@ -30,6 +30,8 @@ export class AdminAuthController {
 
       // Pass the DTO to the service
       const signUpResponse = await this.adminAuthService.signUp(dto);
+      console.log(signUpResponse);
+      
 
       return res
         .status(HttpStatus.OK)

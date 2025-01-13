@@ -23,6 +23,9 @@ export class AdminAuthService {
       const existingApplicant = await this.AdminSignUpModel
         .findOne({ email: dto.email })
         .exec();
+
+        console.log(existingApplicant);
+        
       if (existingApplicant) {
         throw new BadRequestException({
           englishMessage:
