@@ -16,7 +16,7 @@ async function bootstrap() {
   //await setupSwagger(app);
   await setUpCookies(app);
   try {
-    await Promise.all([setupCors(app), setupHelmets(app)]);
+    // await Promise.all([setupCors(app), setupHelmets(app)]);
     await app.listen(3000, '0.0.0.0');
   } catch (error) {
     console.error('Error during bootstrap:', error);
