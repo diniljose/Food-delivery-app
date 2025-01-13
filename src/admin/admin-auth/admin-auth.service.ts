@@ -3,7 +3,7 @@ import { AdminSignUpDto } from './dto/create-admin-auth.dto';
 import { AuthService } from 'src/auth/auth.service';
 import * as jwt from 'jsonwebtoken';
 import { InjectModel } from '@nestjs/mongoose';
-import { AdminSignUp } from 'src/schemas/admin-auth.schema';
+import { AdminSignUp } from '../../schemas/admin-auth.schema';
 import { Model } from 'mongoose';
 import { ResponseService } from 'src/services/response/response.service';
 
