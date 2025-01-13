@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 @Schema({ timestamps: true })
-export class AdminSignUp extends Document {
+export class UserSignUp extends Document {
 
   @Prop({ required: true, unique: true })
   email: string;
@@ -35,4 +35,4 @@ export class AdminSignUp extends Document {
   otpCreatedTime: Date
 }
 
-export const AdminSignUpSchema = SchemaFactory.createForClass(AdminSignUp);
+export const UserSignUpSchema = SchemaFactory.createForClass(UserSignUp);
