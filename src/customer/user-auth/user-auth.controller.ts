@@ -5,7 +5,7 @@ import { UpdateUserAuthDto } from './dto/update-user-auth.dto';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { ResponseService } from 'src/services/response/response.service';
 
-@Controller('user-auth')
+@Controller()
 export class UserAuthController {
   constructor(
     private readonly userAuthService: UserAuthService,
@@ -14,17 +14,15 @@ export class UserAuthController {
 
 
 
-  @Post('UserSignUp')
+  @Post('signUp')
   async signUpApplicant(
     @Body() dto: CreateUserAuthDto,
     @Req() req: FastifyRequest,
     @Res() res: FastifyReply,
   ): Promise<any> {
     try {
-      // Check if mobileNoCountryCode is defined before calling toUpperCase
       dto.email = dto.email.toLowerCase();
-      
-
+    
       // Pass the DTO to the service
       const signUpResponse = await this.userAuthService.signUpUser(dto);
 

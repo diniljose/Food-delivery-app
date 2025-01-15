@@ -2,6 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { globalSetupValidations, setUpCookies, setupCors, setupHelmets } from './resources/secuirities';
+import fastifyStatic from '@fastify/static';
+import { join } from 'path';
+
+
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -10,6 +14,15 @@ async function bootstrap() {
       bodyLimit: 20971520,
     }),
   );
+
+
+  
+  app.register(fastifyStatic, {
+    root: join(__dirname, '..', 'uploads'),
+    // prefix: '/uploads/',
+    // cacheControl: true,  // Enable caching
+    // maxAge: '1d',       // Cache files for 1 day
+  });
 
   //await trackSecurity(app); //very trackcode in middleware
   await globalSetupValidations(app);

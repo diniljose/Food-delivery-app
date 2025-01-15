@@ -17,10 +17,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Envconfig } from './helper/env.config';
 import { AuthService } from './auth/auth.service';
 import { ResponseService } from './services/response/response.service';
+import { ItemModule } from './admin/item/item.module';
+import { APP_ROUTES } from './constants/routes';
+import { RouterModule } from '@nestjs/core';
 
 
 @Module({
   imports: [
+    RouterModule.register(APP_ROUTES),
     ConfigModule.forRoot({
       envFilePath: Envconfig.local
     }),
@@ -37,6 +41,7 @@ import { ResponseService } from './services/response/response.service';
     AuthModule,
     UsersModule,
     AdminAuthModule,
+    ItemModule,
   ],
   controllers: [AppController],
   providers: [AppService,ResponseService,AuthService],
