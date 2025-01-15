@@ -25,8 +25,8 @@ export class ItemService {
 
   async uploadFile(bufferData: Buffer, fileName: string): Promise<{ fileUrl: string }> {
     try {
-      // Define the upload directory in the project root
-      const uploadsDir = path.join(__dirname, '../../../uploads');
+      // Define the public/uploads directory
+      const uploadsDir = path.join(__dirname, '../../../public/uploads');
   
       // Create the directory if it doesn't exist
       if (!fs.existsSync(uploadsDir)) {
@@ -36,18 +36,17 @@ export class ItemService {
       // Define the full file path
       const filePath = path.join(uploadsDir, fileName);
   
-      // Save the file to the specified path
+      // Save the file to the public/uploads directory
       await fs.promises.writeFile(filePath, bufferData);
   
-      // Return the file URL
+      // Return the file URL relative to the public directory
       return {
-        fileUrl: `/uploads/${fileName}`, // Use relative path for serving
+        fileUrl: `/uploads/${fileName}`, // Accessible from Vercel at <domain>/uploads/<filename>
       };
     } catch (error) {
       throw new Error(`Failed to upload file: ${error.message}`);
     }
   }
-  
 
 
 
