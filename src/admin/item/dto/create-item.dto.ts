@@ -20,48 +20,95 @@ export class FileDto {
     @IsNotEmpty()
     mimetype: string; // In bytes
   }
-
-
-  export class ItemDetailsDto {
+  export class CreateItemRequestDto {
     @IsString()
     @IsNotEmpty()
-    fileUrl: string;
-
-
-    @IsString()
-    @IsNotEmpty({ message: 'Item name is required' })
     itemName: string;
   
     @IsString()
-    @IsNotEmpty({ message: 'Category is required' })
-    category: string; // e.g., seafood, chicken, vegetarian
+    @IsNotEmpty()
+    category: string;
   
     @IsString()
-    @IsNotEmpty({ message: 'Cuisine type is required' })
-    cuisine: string; // e.g., Italian, Indian, Chinese
+    @IsNotEmpty()
+    cuisine: string;
   
-    @IsNumber()
-    @IsPositive({ message: 'Price must be a positive number' })
-    price: number;
-  
-    @IsNumber()
-    @Min(1, { message: 'Minimum quantity must be at least 1' })
-    quantity: number;
-  
+    @IsString()
     @IsOptional()
-    @IsString()
     description?: string;
   
     @IsArray()
-    @ArrayMinSize(1, { message: 'At least one ingredient is required' })
-    @IsString({ each: true, message: 'Each ingredient must be a string' })
+    @IsString({ each: true })
     ingredients: string[];
   
-    @IsOptional()
     @IsArray()
-    @IsString({ each: true, message: 'Each tag must be a string' })
-    tags?: string[]; // e.g., spicy, gluten-free, vegan
+    @IsString({ each: true })
+    @IsOptional()
+    tags?: string[];
+  
+    @IsString()
+    @IsOptional()
+    fileUrl?: string;
+  
+    @IsNumber()
+    @Min(0)
+    price: number;
+  
+    @IsNumber()
+    @Min(0)
+    stock: number;
+  
+    @IsString()
+    @IsNotEmpty()
+    unitId: string;
   }
+  
+  export class UpdateItemRequestDto {
+    @IsString()
+    @IsOptional()
+    itemName?: string;
+  
+    @IsString()
+    @IsOptional()
+    category?: string;
+  
+    @IsString()
+    @IsOptional()
+    cuisine?: string;
+  
+    @IsString()
+    @IsOptional()
+    description?: string;
+  
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional()
+    ingredients?: string[];
+  
+    @IsArray()
+    @IsString({ each: true })
+    @IsOptional()
+    tags?: string[];
+  
+    @IsString()
+    @IsOptional()
+    fileUrl?: string;
+  
+    @IsNumber()
+    @IsOptional()
+    @Min(0)
+    price?: number;
+  
+    @IsNumber()
+    @IsOptional()
+    @Min(0)
+    stock?: number;
+  
+    @IsString()
+    @IsOptional()
+    unitId?: string;
+  }
+  
   
 
   

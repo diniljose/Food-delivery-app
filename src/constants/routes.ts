@@ -1,5 +1,6 @@
 import { AdminAuthModule } from "src/admin/admin-auth/admin-auth.module";
 import { ItemModule } from "src/admin/item/item.module";
+import { UnitsModule } from "src/admin/units/units.module";
 import { UserAuthModule } from "src/customer/user-auth/user-auth.module";
 
 export const APP_ROUTES = [
@@ -14,6 +15,10 @@ export const APP_ROUTES = [
 	{
 		path: 'item',
 		module: ItemModule,
+	},
+	{
+		path: 'units',
+		module: UnitsModule,
 	},
 	
 ];

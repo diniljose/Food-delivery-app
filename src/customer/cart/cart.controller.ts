@@ -7,28 +7,26 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
-  @Post()
-  create(@Body() createCartDto: CreateCartDto) {
-    return this.cartService.create(createCartDto);
+  @Get(':userId')
+  getCart(@Param('userId') userId: string) {
+    return this.cartService.getCart(userId);
   }
 
-  @Get()
-  findAll() {
-    return this.cartService.findAll();
+  @Post(':userId/add')
+  addItemToCart(
+    @Param('userId') userId: string,
+    @Body() item: { itemId: string; quantity: number; unitId: string },
+  ) {
+    return this.cartService.addItemToCart(userId, item);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartService.findOne(+id);
+  @Delete(':userId/remove/:itemId')
+  removeItemFromCart(@Param('userId') userId: string, @Param('itemId') itemId: string) {
+    return this.cartService.removeItemFromCart(userId, itemId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartService.update(+id, updateCartDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartService.remove(+id);
+  @Delete(':userId/clear')
+  clearCart(@Param('userId') userId: string) {
+    return this.cartService.clearCart(userId);
   }
 }

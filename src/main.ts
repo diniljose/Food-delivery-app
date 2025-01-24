@@ -18,7 +18,7 @@ async function bootstrap() {
 
   
   app.register(fastifyStatic, {
-    root: join(__dirname, '..', 'uploads'),
+    root: join(__dirname, '..', 'public'),
     // prefix: '/uploads/',
     // cacheControl: true,  // Enable caching
     // maxAge: '1d',       // Cache files for 1 day

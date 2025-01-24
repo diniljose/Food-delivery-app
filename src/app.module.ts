@@ -6,7 +6,6 @@ import { AnalyticsModule } from './admin/analytics/analytics.module';
 import { AuthModule } from './auth/auth.module';
 import { CartModule } from './customer/cart/cart.module';
 import { GlobalCategoryModule } from './customer/global-category/global-category.module';
-import { OrderModule } from './customer/order/order.module';
 import { ProductCategoryModule } from './customer/product-category/product-category.module';
 import { ProductModule } from './customer/product/product.module';
 import { SubcategoryModule } from './customer/subcategory/subcategory.module';
@@ -20,6 +19,10 @@ import { ResponseService } from './services/response/response.service';
 import { ItemModule } from './admin/item/item.module';
 import { APP_ROUTES } from './constants/routes';
 import { RouterModule } from '@nestjs/core';
+import { UnitsModule } from './admin/units/units.module';
+import { OrdersModule } from './customer/orders/orders.module';
+import { WishlistModule } from './customer/wishlist/wishlist.module';
+import { AppMongooseModule } from './resources/db.config';
 
 
 @Module({
@@ -31,17 +34,20 @@ import { RouterModule } from '@nestjs/core';
   
     MongooseModule.forRoot(process.env.MONGODB_URI),
     GlobalCategoryModule,
+    AppMongooseModule,
     SubcategoryModule,
     ProductCategoryModule,
     ProductModule,
     UserAuthModule,
     CartModule,
-    OrderModule,
     AnalyticsModule,
     AuthModule,
     UsersModule,
     AdminAuthModule,
     ItemModule,
+    UnitsModule,
+    OrdersModule,
+    WishlistModule,
   ],
   controllers: [AppController],
   providers: [AppService,ResponseService,AuthService],

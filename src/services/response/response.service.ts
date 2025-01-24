@@ -12,6 +12,8 @@ export class ResponseService {
           arabicMessage: 'نجاح',
           result: responseObject
         }
+
+        
       }
     
       sendErrorResponse(message, arabicMessage, responseObject) {
