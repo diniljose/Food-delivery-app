@@ -9,7 +9,7 @@ import { Order, OrderSchema } from '../schemas/order.schema';
 import { Unit, UnitSchema } from '../schemas/unit.schema';
 import { UserSignUp, UserSignUpSchema } from '../schemas/user-auth.schema';
 import { Wishlist, WishlistSchema } from '../schemas/wishlist.schema';
-import { Category, CategorySchema } from 'src/schemas/category.schema';
+import { Category, CategorySchema } from '../schemas/category.schema';
 
 
 @Global()

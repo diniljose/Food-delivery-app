@@ -8,7 +8,7 @@ import { Model } from 'mongoose';
 import { Wishlist } from '../../schemas/wishlist.schema';
 import { Item } from '../../schemas/item.schema';
 import { Unit } from '../../schemas/unit.schema';
-import { ItemDynamicData } from 'src/schemas/dynamicItemsData.schema';
+import { ItemDynamicData } from '../../schemas/dynamicItemsData.schema';
 
 @Injectable()
 export class OrdersService {

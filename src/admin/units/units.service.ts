@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { UpdateUnitDto } from './dto/update-unit.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Unit } from 'src/schemas/unit.schema';
+import { Unit } from '../../schemas/unit.schema';
 import { Model } from 'mongoose';
 
 @Injectable()

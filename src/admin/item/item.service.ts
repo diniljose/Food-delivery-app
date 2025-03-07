@@ -5,11 +5,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { InjectModel } from '@nestjs/mongoose';
-import { Item } from 'src/schemas/item.schema';
+import { Item } from '../../schemas/item.schema';
 import { Model } from 'mongoose';
-import { ItemDynamicData } from 'src/schemas/dynamicItemsData.schema';
+import { ItemDynamicData } from '../../schemas/dynamicItemsData.schema';
 import { CreateItemRequestDto, UpdateItemRequestDto } from './dto/create-item.dto';
-import { Category } from 'src/schemas/category.schema';
+import { Category } from '../../schemas/category.schema';
 
 
 @Injectable()
