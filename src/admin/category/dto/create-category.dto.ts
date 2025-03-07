@@ -9,6 +9,6 @@ export class CategoryDto {
 
     @IsNotEmpty()
     @IsOptional()
-    fileurl:string
+    fileUrl:string
   }
   
