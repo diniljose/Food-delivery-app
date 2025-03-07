@@ -9,6 +9,7 @@ import { Item } from 'src/schemas/item.schema';
 import { Model } from 'mongoose';
 import { ItemDynamicData } from 'src/schemas/dynamicItemsData.schema';
 import { CreateItemRequestDto, UpdateItemRequestDto } from './dto/create-item.dto';
+import { Category } from 'src/schemas/category.schema';
 
 
 @Injectable()
@@ -16,34 +17,64 @@ export class ItemService {
   constructor(
     @InjectModel(Item.name) private itemModel: Model<Item>,
   @InjectModel(ItemDynamicData.name) private readonly dynamicDataModel: Model<ItemDynamicData>,
+  @InjectModel(Category.name) private categoryModel: Model<Category>
 ) {}
 
 async createItem(createDto: CreateItemRequestDto): Promise<any> {
-  const { price, stock, unitId, ...staticFields } = createDto;
+  const { price, stock, unitId, itemName, categoryId, ...staticFields } = createDto;
 
-  // Create static item
-  const item = await new this.itemModel(staticFields).save();
+  // Validate if categoryId exists in the Category collection
+  const categoryExists = await this.categoryModel.findById(categoryId).select('name').lean().exec();
+  if (!categoryExists) {
+    throw new BadRequestException({
+      englishMessage: 'Invalid categoryId: Category does not exist',
+      arabicMessage: 'معرف الفئة غير صالح: الفئة غير موجودة.',
+    });
 
-  // Create dynamic data
+  }
+
+  // Generate a user-friendly unique ID (e.g., "pizza-12345")
+  const sanitizedItemName = itemName.toLowerCase().replace(/\s+/g, '-').substring(0, 6); // Take first 6 characters
+  const randomNumber = Math.floor(10000 + Math.random() * 90000); // Generate a 5-digit random number
+  const itemId = `${sanitizedItemName}-${randomNumber}`;
+
+  // Create static item with categoryId and other fields
+  const item = await new this.itemModel({
+    itemId,
+    itemName,
+    categoryId,  // Reference to the Category model
+    ...staticFields,
+  }).save();
+
+  // Create dynamic data (price, stock, and unitId) associated with the item
   await new this.dynamicDataModel({
-    itemId: item._id,
+    itemId: item.itemId,
     price,
     stock,
     unitId,
   }).save();
 
-  return { status: 'success', itemId: item._id };
+  // Return success response with the created item's ID
+  return { status: 'success', itemId: item.itemId };
 }
 
+
+
+
 async getAllItems(): Promise<any[]> {
-  const items = await this.itemModel.find().lean();
+  const items = await this.itemModel
+    .find()
+    .populate('categoryId', 'name description') // Populating the categoryId field with the category name and description
+    .lean();
   const dynamicData = await this.dynamicDataModel.find().lean();
 
   return items.map((item) => ({
     ...item,
+    category: item.categoryId,  // Now category is populated directly
     ...dynamicData.find((data) => data.itemId.toString() === item._id.toString()),
   }));
 }
+
 
 /**
  * Update an item's static or dynamic data
@@ -53,7 +84,7 @@ async updateItem(itemId: string, updateDto: UpdateItemRequestDto): Promise<any> 
 
   // Update static fields
   if (Object.keys(staticFields).length > 0) {
-    await this.itemModel.updateOne({ _id: itemId }, { $set: staticFields });
+    await this.itemModel.updateOne({ itemId }, { $set: staticFields });
   }
 
   // Update dynamic fields
@@ -65,41 +96,41 @@ async updateItem(itemId: string, updateDto: UpdateItemRequestDto): Promise<any> 
   return { status: 'success' };
 }
 
+
 /**
  * Retrieve item with dynamic data
  */
 async getItemById(itemId: string): Promise<any> {
-  console.log(itemId);
-
-  // Fetch item and dynamic data in parallel to improve performance
+  // Fetch item and dynamicData in parallel for better performance
   const [item, dynamicData] = await Promise.all([
-    this.itemModel.findById(itemId).lean(),
+    this.itemModel
+      .findOne({ itemId })
+      .populate('categoryId', 'name description') // Populating the categoryId field
+      .lean(),
     this.dynamicDataModel.findOne({ itemId }).lean(),
   ]);
 
-  console.log(item, dynamicData);
-
-  // Merge the results and set missing fields to `null` if not found
-  return {
-    itemName: item?.itemName || null,
-    category: item?.category || null,
-    cuisine: item?.cuisine || null,
-    description: item?.description || null,
-    ingredients: item?.ingredients || null,
-    tags: item?.tags || null,
-    fileUrl: item?.fileUrl || null,
-    price: dynamicData?.price || null,
-    stock: dynamicData?.stock || null,
-    unitId: dynamicData?.unitId || null,
+  // Merge results, setting missing fields to null
+  const result = {
+    ...(item || { name: null, description: null, category: null, price: null, stock: null }),
+    ...(dynamicData || { price: null, stock: null, unitId: null }),
   };
+
+  // If both are null, throw an exception
+  if (!item && !dynamicData) {
+    throw new NotFoundException('Item not found in either table.');
+  }
+
+  return result;
 }
+
 
 
 /**
  * Delete an item and its dynamic data
  */
 async deleteItem(itemId: string): Promise<any> {
-  await this.itemModel.deleteOne({ _id: itemId });
+  await this.itemModel.deleteOne({ itemId });
   await this.dynamicDataModel.deleteOne({ itemId });
   return { status: 'success' };
 }
@@ -131,8 +162,7 @@ async deleteItem(itemId: string): Promise<any> {
   }
 
 
-
-
+  
 
 
   findAll() {

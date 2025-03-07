@@ -49,16 +49,15 @@ export class ItemController {
       );
     }
   }
-
-  @Get('getSingleItem/:id')
+  @Get('getSingleItem/:itemId')
   async getItemById(
-    @Param('id') itemId: string,
+    @Param('itemId') itemId: string,  // updated to itemId
     @Res() res: FastifyReply,
   ): Promise<any> {
     try {
-
       console.log(itemId);
-      
+  
+      // Fetch item using itemId
       const item = await this.itemService.getItemById(itemId);
       return res.send(
         this.responseService.sendSuccessResponse({ dataZ: item }),
@@ -73,10 +72,10 @@ export class ItemController {
       );
     }
   }
-
-  @Put('update/:id')
+  
+  @Put('update/:itemId')
   async updateItem(
-    @Param('id') itemId: string,
+    @Param('itemId') itemId: string,  // updated to itemId
     @Body() updateData: Partial<UpdateItemRequestDto>,
     @Res() res: FastifyReply,
   ): Promise<any> {
@@ -95,10 +94,10 @@ export class ItemController {
       );
     }
   }
-
-  @Delete('delete/:id')
+  
+  @Delete('delete/:itemId')
   async deleteItem(
-    @Param('id') itemId: string,
+    @Param('itemId') itemId: string,  // updated to itemId
     @Res() res: FastifyReply,
   ): Promise<any> {
     try {
@@ -116,7 +115,7 @@ export class ItemController {
       );
     }
   }
-
+  
 
   @Post('upload')
   async uploadFiles(@Req() req: any, @Res() res: FastifyReply) {

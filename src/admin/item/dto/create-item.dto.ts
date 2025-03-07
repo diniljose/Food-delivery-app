@@ -26,8 +26,7 @@ export class FileDto {
     itemName: string;
   
     @IsString()
-    @IsNotEmpty()
-    category: string;
+    categoryId: string; 
   
     @IsString()
     @IsNotEmpty()
@@ -91,7 +90,7 @@ export class FileDto {
     tags?: string[];
   
     @IsString()
-    @IsOptional()
+    @IsNotEmpty()
     fileUrl?: string;
   
     @IsNumber()

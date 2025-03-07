@@ -9,6 +9,7 @@ import { Order, OrderSchema } from '../schemas/order.schema';
 import { Unit, UnitSchema } from '../schemas/unit.schema';
 import { UserSignUp, UserSignUpSchema } from '../schemas/user-auth.schema';
 import { Wishlist, WishlistSchema } from '../schemas/wishlist.schema';
+import { Category, CategorySchema } from 'src/schemas/category.schema';
 
 
 @Global()
@@ -16,6 +17,9 @@ import { Wishlist, WishlistSchema } from '../schemas/wishlist.schema';
   imports: [
     MongooseModule.forFeature([
         { name: AdminSignUp.name, schema: AdminSignUpSchema },
+      ]), 
+      MongooseModule.forFeature([
+        { name: Category.name, schema: CategorySchema },
       ]), 
     MongooseModule.forFeature([
       { name: Cart.name, schema: CartSchema },

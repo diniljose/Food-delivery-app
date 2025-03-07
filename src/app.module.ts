@@ -23,6 +23,7 @@ import { UnitsModule } from './admin/units/units.module';
 import { OrdersModule } from './customer/orders/orders.module';
 import { WishlistModule } from './customer/wishlist/wishlist.module';
 import { AppMongooseModule } from './resources/db.config';
+import { CategoryModule } from './admin/category/category.module';
 
 
 @Module({
@@ -48,6 +49,7 @@ import { AppMongooseModule } from './resources/db.config';
     UnitsModule,
     OrdersModule,
     WishlistModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService,ResponseService,AuthService],
