@@ -6,31 +6,50 @@ export class Order extends Document {
   @Prop({ required: true, ref: 'User' })
   userId: string;
 
-  @Prop({ type: [{ 
-    itemId: { type: MongooseSchema.Types.ObjectId, ref: 'Item' },
-    quantity: { type: Number, required: true },
-    unitId: { type: MongooseSchema.Types.ObjectId, ref: 'Unit' },
-    price: { type: Number, required: true },
-  }], required: true })
+  @Prop({ 
+    type: [{
+      itemId: { type: MongooseSchema.Types.ObjectId, ref: 'Item' },
+      quantity: { type: Number, required: true },
+      unitId: { type: MongooseSchema.Types.ObjectId, ref: 'Unit' },
+      price: { type: Number, required: true }, // Stored as string in DTO, converted to number in service
+      totalPrice: { type: Number, required: true },
+    }],
+    required: true,
+  })
   items: {
     itemId: string;
     quantity: number;
     unitId: string;
-    price: number;
+    price: number;  // Price stored as string
+    totalPrice: number;
   }[];
 
   @Prop({ required: true })
-  @Prop({ required: true })
-  totalAmount: number;
+  totalAmount: number;  // Total amount calculated in service
+
+  @Prop({ default: 0 })
+  discount: number;  // Discount applied to the order (if any)
 
   @Prop({ required: true })
-  status: string;
+  taxAmount: number;  // Tax calculated based on items
 
   @Prop({ required: true })
-  shippingAddress: string;
+  grandTotal: number;  // Grand total after applying discount and tax
 
   @Prop({ required: true })
-  paymentMethod: string;
+  status: string;  // Order status (Pending, Confirmed, Shipped, etc.)
+
+  @Prop({ required: true })
+  shippingAddress: string;  // Shipping address for the order
+
+  @Prop({ required: true })
+  paymentMethod: string;  // Payment method used (e.g., Credit Card, PayPal)
+
+  @Prop()
+  customerNote?: string;  // Optional field for delivery instructions
+
+  @Prop()
+  estimatedDeliveryTime?: Date;  // Optional field for delivery ETA
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

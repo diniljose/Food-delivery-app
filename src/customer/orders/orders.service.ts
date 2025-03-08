@@ -23,25 +23,39 @@ export class OrdersService {
 
   async createOrder(createOrderDto: CreateOrderDto): Promise<Order> {
     const { items } = createOrderDto;
-
-    // Update stock and verify
+    
+    // Calculate total amount for the order
+    let totalAmount = 0;
+  
+    // Update stock and verify for each item
     for (const item of items) {
       const dynamicData = await this.itemDynamicDataModel.findOne({ itemId: item.itemId, unitId: item.unitId });
-      if (!dynamicData || dynamicData.stock < item.quantity) {
+      
+      if (!dynamicData || parseFloat(dynamicData.stock.toString()) < item.quantity) {
         throw new NotFoundException(`Insufficient stock for item ${item.itemId}`);
       }
-
-      // Reduce stock
+  
+      // Calculate the total price for this item (price is stored as a string)
+      const itemPrice = dynamicData.price; // Convert the price string to a number
+      const totalItemPrice = itemPrice * item.quantity;
+      totalAmount += totalItemPrice; // Add item total to order total
+  
+      // Reduce stock for the item
       await this.itemDynamicDataModel.updateOne(
         { itemId: item.itemId, unitId: item.unitId },
         { $inc: { stock: -item.quantity } },
       );
     }
-
-    // Create order
-    const order = new this.orderModel(createOrderDto);
+  
+    // Create the order with the total amount calculated
+    const order = new this.orderModel({
+      ...createOrderDto,
+      totalAmount,  // Total amount calculated from item prices and quantities
+    });
+  
     return order.save();
   }
+  
 
   async getOrdersByUser(userId: string): Promise<Order[]> {
     return this.orderModel.find({ userId }).populate('items.itemId').exec();

@@ -12,16 +12,27 @@ export class UnitsController {
   constructor(private readonly unitsService: UnitsService,    private readonly responseService: ResponseService,) {}
 
   @Post('create')
-  async createOrUpdateUnits(@Body() units: CreateUnitDto[]): Promise<any> {
-    return this.unitsService.createOrUpdateUnits(units);
+  async createOrUpdateUnits(@Res() res: FastifyReply, @Body() units: CreateUnitDto[]): Promise<any> {
+   try {
+     const response = await  this.unitsService.createOrUpdateUnits(units);
+      return res.send(
+        this.responseService.sendSuccessResponse({ data: response}),
+      );
+   } catch (error) {
+    this.responseService.handleError(res, error);
+   }
   }
 
   @Get()
   async getUnits(@Res() res: FastifyReply): Promise<Unit[]> {
-    const response = await this.unitsService.getAllUnits();
-    return res.send(
-      this.responseService.sendSuccessResponse({ data: response}),
-    );
+  try {
+      const response = await this.unitsService.getAllUnits();
+      return res.send(
+        this.responseService.sendSuccessResponse({ data: response}),
+      );
+  } catch (error) {
+    this.responseService.handleError(res, error);
+  }
   }
 
   @Get('getAll')
@@ -32,18 +43,22 @@ export class UnitsController {
         this.responseService.sendSuccessResponse({ data: response}),
       );
     } catch (error) {
-      return res.send(
-        this.responseService.sendErrorResponse(
-          'Failed to fetch items',
-          'فشل في جلب العناصر',
-          error.message,
-        ),
-      );
+      this.responseService.handleError(res, error);
+
     }
   }
 
   @Delete(':id')
-  async deleteUnit(@Param('id') id: string): Promise<any> {
-    return this.unitsService.deleteUnit(id);
+  async deleteUnit(@Res() res: FastifyReply, @Param('id') id: string): Promise<any> {
+   try {
+    const response =  this.unitsService.deleteUnit(id);
+    return res.send(
+      this.responseService.sendSuccessResponse({ data: response}),
+    );
+   
+   } catch (error) {
+    this.responseService.handleError(res, error);
+    
+   }
   }
 }

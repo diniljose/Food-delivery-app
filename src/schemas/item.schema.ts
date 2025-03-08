@@ -10,24 +10,35 @@ export class Item extends Document {
   @Prop({ required: true, lowercase: true })
   itemName: string;
 
-  // Updated category to reference Category model
   @Prop({ type: String, required: true, ref: 'Category' })
-  categoryId: string; // This will store the category reference (ObjectId)
+  categoryId: string;
+
+  @Prop({ type: String, required: true, ref: 'Restaurant' })
+  restaurantId: string; // New field to associate items with restaurants
 
   @Prop({ required: true })
   cuisine: string;
 
-  @Prop({ required: false })
+  @Prop()
   description?: string;
 
   @Prop({ type: [String], required: true })
   ingredients: string[];
 
-  @Prop({ type: [String], required: false })
+  @Prop({ type: [String] })
   tags?: string[];
 
-  @Prop({ required: false })
+  @Prop()
   fileUrl?: string;
+
+  @Prop()
+  imageUrls: string[];
+
+  @Prop({ default: true })
+  isAvailable: boolean; // New field to track availability
+
+  @Prop({ type: Number, default: 0 })
+  rating: number; // New field to store average rating
 }
 
 export const ItemSchema = SchemaFactory.createForClass(Item);

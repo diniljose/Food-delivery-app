@@ -5,7 +5,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { ResponseService } from 'src/services/response/response.service';
 import { CategoryDto } from './dto/create-category.dto';
 
-@Controller('category')
+@Controller()
 export class CategoryController {
   constructor(
     private readonly categoryService: CategoryService,
@@ -23,13 +23,7 @@ export class CategoryController {
         this.responseService.sendSuccessResponse({ category }),
       );
     } catch (error) {
-      return res.send(
-        this.responseService.sendErrorResponse(
-          'Failed to create category',
-          'فشل في إنشاء الفئة',
-          error.message,
-        ),
-      );
+      this.responseService.handleError(res, error);
     }
   }
 
@@ -45,13 +39,7 @@ export class CategoryController {
         this.responseService.sendSuccessResponse({ category }),
       );
     } catch (error) {
-      return res.send(
-        this.responseService.sendErrorResponse(
-          'Failed to fetch category',
-          'فشل في جلب الفئة',
-          error.message,
-        ),
-      );
+      this.responseService.handleError(res, error);
     }
   }
 
@@ -64,13 +52,7 @@ export class CategoryController {
         this.responseService.sendSuccessResponse({ categories }),
       );
     } catch (error) {
-      return res.send(
-        this.responseService.sendErrorResponse(
-          'Failed to fetch categories',
-          'فشل في جلب الفئات',
-          error.message,
-        ),
-      );
+      this.responseService.handleError(res, error);
     }
   }
 
@@ -87,13 +69,7 @@ export class CategoryController {
         this.responseService.sendSuccessResponse({ updatedCategory }),
       );
     } catch (error) {
-      return res.send(
-        this.responseService.sendErrorResponse(
-          'Failed to update category',
-          'فشل في تحديث الفئة',
-          error.message,
-        ),
-      );
+      this.responseService.handleError(res, error);
     }
   }
 
@@ -109,13 +85,7 @@ export class CategoryController {
         this.responseService.sendSuccessResponse({ message: 'Category deleted successfully' }),
       );
     } catch (error) {
-      return res.send(
-        this.responseService.sendErrorResponse(
-          'Failed to delete category',
-          'فشل في حذف الفئة',
-          error.message,
-        ),
-      );
+      this.responseService.handleError(res, error);
     }
   }
 }

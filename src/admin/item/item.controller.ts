@@ -22,13 +22,7 @@ export class ItemController {
         this.responseService.sendSuccessResponse({ item: 'Item created successfully' }),
       );
     } catch (error) {
-      return res.send(
-        this.responseService.sendErrorResponse(
-          'Failed to create item',
-          'فشل في إنشاء العنصر',
-          error.message,
-        ),
-      );
+      this.responseService.handleError(res, error);
     }
   }
 
@@ -40,13 +34,7 @@ export class ItemController {
         this.responseService.sendSuccessResponse({ data: items}),
       );
     } catch (error) {
-      return res.send(
-        this.responseService.sendErrorResponse(
-          'Failed to fetch items',
-          'فشل في جلب العناصر',
-          error.message,
-        ),
-      );
+      this.responseService.handleError(res, error);
     }
   }
   @Get('getSingleItem/:itemId')
@@ -60,20 +48,14 @@ export class ItemController {
       // Fetch item using itemId
       const item = await this.itemService.getItemById(itemId);
       return res.send(
-        this.responseService.sendSuccessResponse({ dataZ: item }),
+        this.responseService.sendSuccessResponse({ data: item }),
       );
     } catch (error) {
-      return res.send(
-        this.responseService.sendErrorResponse(
-          'Failed to fetch item',
-          'فشل في جلب العنصر',
-          error.message,
-        ),
-      );
+      this.responseService.handleError(res, error);
     }
   }
   
-  @Put('update/:itemId')
+  @Patch('update/:itemId')
   async updateItem(
     @Param('itemId') itemId: string,  // updated to itemId
     @Body() updateData: Partial<UpdateItemRequestDto>,
@@ -85,13 +67,7 @@ export class ItemController {
         this.responseService.sendSuccessResponse({ updatedItem: 'Item updated successfully' }),
       );
     } catch (error) {
-      return res.send(
-        this.responseService.sendErrorResponse(
-          'Failed to update item',
-          'فشل في تحديث العنصر',
-          error.message,
-        ),
-      );
+      this.responseService.handleError(res, error);
     }
   }
   
@@ -106,13 +82,7 @@ export class ItemController {
         this.responseService.sendSuccessResponse({ data: 'Item deleted successfully' }),
       );
     } catch (error) {
-      return res.send(
-        this.responseService.sendErrorResponse(
-          'Failed to delete item',
-          'فشل في حذف العنصر',
-          error.message,
-        ),
-      );
+      this.responseService.handleError(res, error);
     }
   }
   
@@ -151,10 +121,7 @@ export class ItemController {
       });
     } catch (error) {
       // Handle errors
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
-        message: 'Error uploading files',
-        error: error.message,
-      });
+      this.responseService.handleError(res, error);
     }
   }
 

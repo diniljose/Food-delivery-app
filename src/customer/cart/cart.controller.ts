@@ -1,32 +1,85 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
+import { FastifyReply, FastifyRequest } from 'fastify';
+import { Cart } from 'src/schemas/cart.schema';
+import { ResponseService } from 'src/services/response/response.service';
 
-@Controller('cart')
+@Controller()
 export class CartController {
-  constructor(private readonly cartService: CartService) {}
+  constructor(private readonly cartService: CartService, private readonly responseService: ResponseService) { }
 
-  @Get(':userId')
-  getCart(@Param('userId') userId: string) {
-    return this.cartService.getCart(userId);
-  }
-
-  @Post(':userId/add')
-  addItemToCart(
-    @Param('userId') userId: string,
-    @Body() item: { itemId: string; quantity: number; unitId: string },
-  ) {
-    return this.cartService.addItemToCart(userId, item);
-  }
-
-  @Delete(':userId/remove/:itemId')
-  removeItemFromCart(@Param('userId') userId: string, @Param('itemId') itemId: string) {
-    return this.cartService.removeItemFromCart(userId, itemId);
-  }
-
-  @Delete(':userId/clear')
-  clearCart(@Param('userId') userId: string) {
-    return this.cartService.clearCart(userId);
-  }
+    // Fetch the cart for a user based on mobileNoCountryCode and mobileNo
+    @Get('getCart')
+    async getCart(
+      @Body() { mobileNoCountryCode, mobileNo }: CreateCartDto,  // Receive mobileNoCountryCode and mobileNo from the body
+      @Res() res: FastifyReply,
+    ) {
+      try {
+        const response = await this.cartService.getCart(mobileNoCountryCode, mobileNo);
+        return res.send(
+          this.responseService.sendSuccessResponse({ data: response }),
+        );
+      } catch (error) {
+        this.responseService.handleError(res, error);
+        // handle error
+      }
+    }
+  
+    @Post('addItem')
+    async addItemToCart(
+      @Param('userId') userId: string,
+  
+      @Body() item: CreateCartDto,
+      @Res() res: FastifyReply
+    ): Promise<any> {
+      const { mobileNoCountryCode, mobileNo } = item
+      try {
+        const response = await this.cartService.addItemToCart(mobileNoCountryCode, mobileNo, item);;
+        return res.send(
+          this.responseService.sendSuccessResponse({ data: response }),
+        );
+      } catch (error) {
+        this.responseService.handleError(res, error);
+  
+      }
+  
+    }
+    // Add an item to the cart
+  
+    // Remove an item from the cart
+    @Delete('remove/:itemId')
+    async removeItemFromCart(
+      @Param('itemId') itemId: string,
+      @Body() { mobileNoCountryCode, mobileNo }: CreateCartDto,  // Receive mobileNoCountryCode and mobileNo from the body
+      @Res() res: FastifyReply,
+    ) {
+      try {
+        const response = await this.cartService.removeItemFromCart(mobileNoCountryCode, mobileNo, itemId);
+        return res.send(
+          this.responseService.sendSuccessResponse({ data: response }),
+        );
+      } catch (error) {
+        // handle error
+        this.responseService.handleError(res, error);
+      }
+    }
+  
+    // Clear the cart for a user
+    @Delete('clear')
+    async clearCart(
+      @Body() { mobileNoCountryCode, mobileNo }: CreateCartDto,  // Receive mobileNoCountryCode and mobileNo from the body
+      @Res() res: FastifyReply,
+    ) {
+      try {
+        const response = await this.cartService.clearCart(mobileNoCountryCode, mobileNo);
+        return res.send(
+          this.responseService.sendSuccessResponse({ data: response }),
+        );
+      } catch (error) {
+        this.responseService.handleError(res, error);
+        // handle error
+      }
+    }
 }

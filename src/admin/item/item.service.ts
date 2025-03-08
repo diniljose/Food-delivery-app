@@ -21,7 +21,7 @@ export class ItemService {
 ) {}
 
 async createItem(createDto: CreateItemRequestDto): Promise<any> {
-  const { price, stock, unitId, itemName, categoryId, ...staticFields } = createDto;
+  const { price, discountPrice, stock, unitId, itemName, categoryId, ...staticFields } = createDto;
 
   // Validate if categoryId exists in the Category collection
   const categoryExists = await this.categoryModel.findById(categoryId).select('name').lean().exec();
@@ -30,7 +30,6 @@ async createItem(createDto: CreateItemRequestDto): Promise<any> {
       englishMessage: 'Invalid categoryId: Category does not exist',
       arabicMessage: 'معرف الفئة غير صالح: الفئة غير موجودة.',
     });
-
   }
 
   // Generate a user-friendly unique ID (e.g., "pizza-12345")
@@ -46,11 +45,12 @@ async createItem(createDto: CreateItemRequestDto): Promise<any> {
     ...staticFields,
   }).save();
 
-  // Create dynamic data (price, stock, and unitId) associated with the item
+  // Create dynamic data (price, discountPrice, stock, and unitId) associated with the item
   await new this.dynamicDataModel({
     itemId: item.itemId,
-    price,
-    stock,
+    price: price || '0',  // Ensure price is included as a string (default to '0' if not provided)
+    discountPrice: discountPrice || null,  // Handle optional discountPrice as string or null
+    stock: stock || '0',  // Ensure stock is included as a string (default to '0' if not provided)
     unitId,
   }).save();
 
@@ -58,21 +58,53 @@ async createItem(createDto: CreateItemRequestDto): Promise<any> {
   return { status: 'success', itemId: item.itemId };
 }
 
-
-
-
 async getAllItems(): Promise<any[]> {
   const items = await this.itemModel
     .find()
     .populate('categoryId', 'name description') // Populating the categoryId field with the category name and description
-    .lean();
+    .lean();  // Return as plain JavaScript objects
+
   const dynamicData = await this.dynamicDataModel.find().lean();
 
-  return items.map((item) => ({
-    ...item,
-    category: item.categoryId,  // Now category is populated directly
-    ...dynamicData.find((data) => data.itemId.toString() === item._id.toString()),
-  }));
+  return items.map((item) => {
+    const dynamic = dynamicData.find((data) => data.itemId.toString() === item._id.toString());
+    
+    return {
+      ...item,
+      category: item.categoryId,  // Now category is populated directly
+      unit: dynamic ? dynamic.unitId : null,  // Merge unitId from dynamicData
+      ...dynamic,  // Merge dynamic data with item data
+    };
+  });
+}
+
+
+async getItemById(itemId: string): Promise<any> {
+  // Fetch item and dynamicData in parallel for better performance
+  const [item, dynamicData] = await Promise.all([
+    this.itemModel
+      .findOne({ itemId })
+      .populate('categoryId', 'name description') // Populating the categoryId field
+       // Populating the unitId field
+      .lean(),
+    this.dynamicDataModel.findOne({ itemId }).populate('unitId', 'name abbreviation description').lean(),
+  ]);
+
+  console.log("dynamicData",dynamicData);
+  
+
+  // Merge results, setting missing fields to null
+  const result = {
+    ...(item || { name: null, description: null, category: null, price: null, stock: null, unit: null }),
+    ...(dynamicData || { price: null, stock: null, unitId: null, discountPrice: null }),
+  };
+
+  // If both are null, throw an exception
+  if (!item && !dynamicData) {
+    throw new NotFoundException('Item not found in either table.');
+  }
+
+  return result;
 }
 
 
@@ -100,29 +132,6 @@ async updateItem(itemId: string, updateDto: UpdateItemRequestDto): Promise<any> 
 /**
  * Retrieve item with dynamic data
  */
-async getItemById(itemId: string): Promise<any> {
-  // Fetch item and dynamicData in parallel for better performance
-  const [item, dynamicData] = await Promise.all([
-    this.itemModel
-      .findOne({ itemId })
-      .populate('categoryId', 'name description') // Populating the categoryId field
-      .lean(),
-    this.dynamicDataModel.findOne({ itemId }).lean(),
-  ]);
-
-  // Merge results, setting missing fields to null
-  const result = {
-    ...(item || { name: null, description: null, category: null, price: null, stock: null }),
-    ...(dynamicData || { price: null, stock: null, unitId: null }),
-  };
-
-  // If both are null, throw an exception
-  if (!item && !dynamicData) {
-    throw new NotFoundException('Item not found in either table.');
-  }
-
-  return result;
-}
 
 
 

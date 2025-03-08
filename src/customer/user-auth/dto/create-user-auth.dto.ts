@@ -23,10 +23,12 @@ export class CreateUserAuthDto {
   
     @IsOptional()
     @IsString()
+    @IsNotEmpty()
     mobileNoCountryCode?: string;
   
     @IsOptional()
     @IsNumber()
+    @IsNotEmpty()
     mobileNo?: number;
   
     @IsOptional()

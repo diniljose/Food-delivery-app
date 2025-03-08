@@ -7,10 +7,19 @@ export class Wishlist extends Document {
   userId: string;
 
   @Prop({
-    type: [{ type: String, ref: 'Item' }],
+    type: [{
+      itemId: { type: String, ref: 'Item' },
+      // restaurantId: { type: String, ref: 'Restaurant', required: true },
+      notes: { type: String }
+    }],
     default: [],
   })
-  items: string[]; // Array of item IDs
+  items: {
+    itemId: string;
+    // restaurantId: string;
+    notes?: string;
+  }[];
 }
 
 export const WishlistSchema = SchemaFactory.createForClass(Wishlist);
+

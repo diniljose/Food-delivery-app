@@ -1,19 +1,19 @@
-import { IsArray, IsNotEmpty, IsString, IsNumber, IsMongoId, IsOptional } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString, IsNumber, IsMongoId, IsOptional, isNumber } from 'class-validator';
 
 
 export class ItemDto {
-    @IsMongoId()
-    itemId: string;
+  @IsMongoId()
+  itemId: string;  // Item identifier
   
-    @IsNumber()
-    quantity: number;
+  @IsNumber()
+  quantity: number;  // Quantity of the item
   
-    @IsMongoId()
-    unitId: string;
+  @IsMongoId()
+  unitId: string;  // Unit of the item
   
-    @IsNumber()
-    price: number;
-  }
+  @IsNumber()
+  price: number;  // Price of the item, stored as a string
+}
 export class CreateOrderDto {
   @IsNotEmpty()
   @IsString()
