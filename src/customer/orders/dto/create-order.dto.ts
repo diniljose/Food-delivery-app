@@ -1,8 +1,16 @@
-import { IsArray, IsNotEmpty, IsString, IsNumber, IsMongoId, IsOptional, isNumber } from 'class-validator';
+import { 
+  IsArray, 
+  IsNotEmpty, 
+  IsString, 
+  IsNumber, 
+  IsMongoId, 
+  IsOptional 
+} from 'class-validator';
 
-
+// Item DTO with totalPrice included
 export class ItemDto {
-  @IsMongoId()
+
+  @IsString()
   itemId: string;  // Item identifier
   
   @IsNumber()
@@ -12,11 +20,16 @@ export class ItemDto {
   unitId: string;  // Unit of the item
   
   @IsNumber()
-  price: number;  // Price of the item, stored as a string
+  price: number;  // Price of the item
+  
+  @IsNumber()
+  totalPrice: number;  // Total price for this item (price * quantity)
 }
+
+// DTO for creating an order
 export class CreateOrderDto {
   @IsNotEmpty()
-  @IsString()
+  @IsMongoId()
   userId: string;  // User who placed the order
 
   @IsArray()
@@ -24,11 +37,16 @@ export class CreateOrderDto {
   items: ItemDto[];  // Array of items in the order
 
   @IsNumber()
-  totalAmount: number;  // Total amount of the order
+  totalAmount: number;  // Total amount of the order before tax & discounts
 
-  @IsNotEmpty()
-  @IsString()
-  status: string;  // Status of the order (e.g., 'Pending', 'Confirmed', 'Shipped', 'Delivered')
+  @IsNumber()
+  discount: number;  // Discount applied to the order
+
+  @IsNumber()
+  taxAmount: number;  // Tax calculated based on items
+
+  @IsNumber()
+  grandTotal: number;  // Grand total after applying discount and tax
 
   @IsNotEmpty()
   @IsString()
@@ -36,29 +54,64 @@ export class CreateOrderDto {
 
   @IsNotEmpty()
   @IsString()
-  paymentMethod: string;  // Payment method (e.g., 'Credit Card', 'PayPal', etc.)
+  paymentMethod: string;  // Payment method used (e.g., 'Credit Card', 'PayPal')
+
+  @IsOptional()
+  @IsString()
+  customerNote?: string;  // Optional field for delivery instructions
+
+  @IsOptional()
+  estimatedDeliveryTime?: Date;  // Optional field for estimated delivery
+
+  @IsOptional()
+  @IsMongoId()
+  deliveryAgentId?: string;  // Initially null until assigned
+
+  @IsNotEmpty()
+  @IsString()
+  status: string;  // Order status (e.g., 'Pending', 'Accepted', etc.)
 }
 
+// DTO for returning an order response
+export class OrderResponseDto {
+  @IsMongoId()
+  orderId: string;
 
-  export class OrderResponseDto {
-    @IsString()
-    orderId: string;
-  
-    @IsString()
-    userId: string;
-  
-    @IsArray()
-    items: ItemDto[];  // Array of items in the order, populated with details
-  
-    @IsNumber()
-    totalAmount: number;  // Total amount of the order
-  
-    @IsString()
-    status: string;  // Status of the order
-  
-    @IsString()
-    shippingAddress: string;  // Shipping address for the order
-  
-    @IsString()
-    paymentMethod: string;  // Payment method used for the order
-  }
+  @IsMongoId()
+  userId: string;
+
+  @IsArray()
+  items: ItemDto[];  // Array of items in the order
+
+  @IsNumber()
+  totalAmount: number;  // Total amount before tax & discounts
+
+  @IsNumber()
+  discount: number;  // Discount applied to the order
+
+  @IsNumber()
+  taxAmount: number;  // Tax calculated based on items
+
+  @IsNumber()
+  grandTotal: number;  // Grand total after applying discount and tax
+
+  @IsString()
+  shippingAddress: string;  // Shipping address for the order
+
+  @IsString()
+  paymentMethod: string;  // Payment method used for the order
+
+  @IsOptional()
+  @IsString()
+  customerNote?: string;  // Optional field for delivery instructions
+
+  @IsOptional()
+  estimatedDeliveryTime?: Date;  // Optional field for estimated delivery
+
+  @IsOptional()
+  @IsMongoId()
+  deliveryAgentId?: string;  // Delivery agent assigned
+
+  @IsString()
+  status: string;  // Order status
+}

@@ -6,9 +6,9 @@ export class Order extends Document {
   @Prop({ required: true, ref: 'User' })
   userId: string;
 
-  @Prop({ 
+  @Prop({
     type: [{
-      itemId: { type: MongooseSchema.Types.ObjectId, ref: 'Item' },
+      itemId: { type: String, ref: 'Item' },
       quantity: { type: Number, required: true },
       unitId: { type: MongooseSchema.Types.ObjectId, ref: 'Unit' },
       price: { type: Number, required: true }, // Stored as string in DTO, converted to number in service
@@ -36,8 +36,6 @@ export class Order extends Document {
   @Prop({ required: true })
   grandTotal: number;  // Grand total after applying discount and tax
 
-  @Prop({ required: true })
-  status: string;  // Order status (Pending, Confirmed, Shipped, etc.)
 
   @Prop({ required: true })
   shippingAddress: string;  // Shipping address for the order
@@ -50,6 +48,12 @@ export class Order extends Document {
 
   @Prop()
   estimatedDeliveryTime?: Date;  // Optional field for delivery ETA
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', default: null })
+  deliveryAgentId?: string;  // Initially null until assigned
+
+  @Prop({ default: 'Pending' })
+  status: string; // ('Pending', 'Accepted', 'Out for Delivery', 'Delivered')
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

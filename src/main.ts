@@ -4,6 +4,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { globalSetupValidations, setUpCookies, setupCors, setupHelmets } from './resources/secuirities';
 import fastifyStatic from '@fastify/static';
 import { join } from 'path';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 
 
@@ -15,8 +16,10 @@ async function bootstrap() {
     }),
   );
 
+  // app.useWebSocketAdapter(new IoAdapter(app));
 
-  
+  app.useWebSocketAdapter(new IoAdapter(app));
+
   app.register(fastifyStatic, {
     root: join(__dirname, '..', 'public'),
     // prefix: '/uploads/',

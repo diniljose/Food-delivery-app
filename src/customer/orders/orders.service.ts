@@ -9,6 +9,7 @@ import { Wishlist } from '../../schemas/wishlist.schema';
 import { Item } from '../../schemas/item.schema';
 import { Unit } from '../../schemas/unit.schema';
 import { ItemDynamicData } from '../../schemas/dynamicItemsData.schema';
+import { OrdersGateway } from './orders.gateway';
 
 @Injectable()
 export class OrdersService {
@@ -19,6 +20,7 @@ export class OrdersService {
     @InjectModel(ItemDynamicData.name) private itemDynamicDataModel: Model<ItemDynamicData>,
     @InjectModel(Unit.name) private unitModel: Model<Unit>,
     @InjectModel(Cart.name) private cartModel: Model<Cart>,
+    private ordersGateway: OrdersGateway,
   ) {}
 
   async createOrder(createOrderDto: CreateOrderDto): Promise<Order> {
@@ -26,6 +28,9 @@ export class OrdersService {
     
     // Calculate total amount for the order
     let totalAmount = 0;
+  
+    // Initialize an array to store updated items (with their totalPrice)
+    const updatedItems = [];
   
     // Update stock and verify for each item
     for (const item of items) {
@@ -41,19 +46,39 @@ export class OrdersService {
       totalAmount += totalItemPrice; // Add item total to order total
   
       // Reduce stock for the item
+
+      updatedItems.push({
+        ...item,
+        totalPrice: totalItemPrice,
+      });
+
+      
       await this.itemDynamicDataModel.updateOne(
         { itemId: item.itemId, unitId: item.unitId },
         { $inc: { stock: -item.quantity } },
-      );
-    }
+        );
+      }
+
+      const discount = createOrderDto.discount || 0;
+      const taxAmount = createOrderDto.taxAmount || 0;
+      const grandTotal = totalAmount - discount + taxAmount;
+  
   
     // Create the order with the total amount calculated
     const order = new this.orderModel({
       ...createOrderDto,
-      totalAmount,  // Total amount calculated from item prices and quantities
+      status: 'Pending',
+      deliveryAgentId: null,
+      totalAmount,
+      discount,
+      taxAmount,
+      grandTotal,
+      items: updatedItems,
     });
-  
-    return order.save();
+    const savedOrder = await order.save();
+
+    this.ordersGateway.notifyDeliveryAgents(savedOrder);
+    return savedOrder;
   }
   
 
@@ -67,6 +92,7 @@ export class OrdersService {
     if (!order) {
       throw new NotFoundException(`Order with ID ${orderId} not found`);
     }
+    this.ordersGateway.sendOrderUpdate(order);
     return order;
   }
 

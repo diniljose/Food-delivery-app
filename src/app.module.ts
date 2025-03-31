@@ -24,6 +24,7 @@ import { OrdersModule } from './customer/orders/orders.module';
 import { WishlistModule } from './customer/wishlist/wishlist.module';
 import { AppMongooseModule } from './resources/db.config';
 import { CategoryModule } from './admin/category/category.module';
+import { OrdersGateway } from './customer/orders/orders.gateway';
 
 
 @Module({
@@ -52,6 +53,6 @@ import { CategoryModule } from './admin/category/category.module';
     CategoryModule,
   ],
   controllers: [AppController],
-  providers: [AppService,ResponseService,AuthService],
+  providers: [AppService,ResponseService,AuthService,],
 })
 export class AppModule {}
