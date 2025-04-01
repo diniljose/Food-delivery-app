@@ -49,10 +49,9 @@ export class CartController {
   // Add an item to the cart
 
   // Remove an item from the cart
-  @Delete('remove/:itemId')
+  @Delete('remove')
   async removeItemFromCart(
-    @Param('itemId') itemId: string,
-    @Body() { mobileNoCountryCode, mobileNo }: CreateCartDto,  // Receive mobileNoCountryCode and mobileNo from the body
+    @Body() { mobileNoCountryCode, mobileNo ,itemId}: CreateCartDto,  // Receive mobileNoCountryCode and mobileNo from the body
     @Res() res: FastifyReply,
   ) {
     try {
