@@ -10,76 +10,76 @@ import { ResponseService } from 'src/services/response/response.service';
 export class CartController {
   constructor(private readonly cartService: CartService, private readonly responseService: ResponseService) { }
 
-    // Fetch the cart for a user based on mobileNoCountryCode and mobileNo
-    @Get('getCart')
-    async getCart(
-      @Body() { mobileNoCountryCode, mobileNo }: CreateCartDto,  // Receive mobileNoCountryCode and mobileNo from the body
-      @Res() res: FastifyReply,
-    ) {
-      try {
-        const response = await this.cartService.getCart(mobileNoCountryCode, mobileNo);
-        return res.send(
-          this.responseService.sendSuccessResponse({ data: response }),
-        );
-      } catch (error) {
-        this.responseService.handleError(res, error);
-        // handle error
-      }
+  // Fetch the cart for a user based on mobileNoCountryCode and mobileNo
+  @Post('getCart')
+  async getCart(
+    @Body() body: CreateCartDto,  // Receive mobileNoCountryCode and mobileNo from the body
+    @Res() res: FastifyReply,
+  ) {
+    try {
+
+      const { mobileNoCountryCode, mobileNo } = body
+      const response = await this.cartService.getCart(mobileNoCountryCode, mobileNo);
+      return res.send(
+        this.responseService.sendSuccessResponse({ data: response }),
+      );
+    } catch (error) {
+      this.responseService.handleError(res, error);
+      // handle error
     }
-  
-    @Post('addItem')
-    async addItemToCart(
-      @Param('userId') userId: string,
-  
-      @Body() item: CreateCartDto,
-      @Res() res: FastifyReply
-    ): Promise<any> {
-      const { mobileNoCountryCode, mobileNo } = item
-      try {
-        const response = await this.cartService.addItemToCart(mobileNoCountryCode, mobileNo, item);;
-        return res.send(
-          this.responseService.sendSuccessResponse({ data: response }),
-        );
-      } catch (error) {
-        this.responseService.handleError(res, error);
-  
-      }
-  
+  }
+
+  @Post('addItem')
+  async addItemToCart(
+    @Body() item: CreateCartDto,
+    @Res() res: FastifyReply
+  ): Promise<any> {
+    const { mobileNoCountryCode, mobileNo } = item
+    try {
+      const response = await this.cartService.addItemToCart(mobileNoCountryCode, mobileNo, item);;
+      return res.send(
+        this.responseService.sendSuccessResponse({ data: response }),
+      );
+    } catch (error) {
+      this.responseService.handleError(res, error);
+
     }
-    // Add an item to the cart
-  
-    // Remove an item from the cart
-    @Delete('remove/:itemId')
-    async removeItemFromCart(
-      @Param('itemId') itemId: string,
-      @Body() { mobileNoCountryCode, mobileNo }: CreateCartDto,  // Receive mobileNoCountryCode and mobileNo from the body
-      @Res() res: FastifyReply,
-    ) {
-      try {
-        const response = await this.cartService.removeItemFromCart(mobileNoCountryCode, mobileNo, itemId);
-        return res.send(
-          this.responseService.sendSuccessResponse({ data: response }),
-        );
-      } catch (error) {
-        // handle error
-        this.responseService.handleError(res, error);
-      }
+
+  }
+  // Add an item to the cart
+
+  // Remove an item from the cart
+  @Delete('remove/:itemId')
+  async removeItemFromCart(
+    @Param('itemId') itemId: string,
+    @Body() { mobileNoCountryCode, mobileNo }: CreateCartDto,  // Receive mobileNoCountryCode and mobileNo from the body
+    @Res() res: FastifyReply,
+  ) {
+    try {
+      const response = await this.cartService.removeItemFromCart(mobileNoCountryCode, mobileNo, itemId);
+      return res.send(
+        this.responseService.sendSuccessResponse({ data: response }),
+      );
+    } catch (error) {
+      // handle error
+      this.responseService.handleError(res, error);
     }
-  
-    // Clear the cart for a user
-    @Delete('clear')
-    async clearCart(
-      @Body() { mobileNoCountryCode, mobileNo }: CreateCartDto,  // Receive mobileNoCountryCode and mobileNo from the body
-      @Res() res: FastifyReply,
-    ) {
-      try {
-        const response = await this.cartService.clearCart(mobileNoCountryCode, mobileNo);
-        return res.send(
-          this.responseService.sendSuccessResponse({ data: response }),
-        );
-      } catch (error) {
-        this.responseService.handleError(res, error);
-        // handle error
-      }
+  }
+
+  // Clear the cart for a user
+  @Delete('clear')
+  async clearCart(
+    @Body() { mobileNoCountryCode, mobileNo }: CreateCartDto,  // Receive mobileNoCountryCode and mobileNo from the body
+    @Res() res: FastifyReply,
+  ) {
+    try {
+      const response = await this.cartService.clearCart(mobileNoCountryCode, mobileNo);
+      return res.send(
+        this.responseService.sendSuccessResponse({ data: response }),
+      );
+    } catch (error) {
+      this.responseService.handleError(res, error);
+      // handle error
     }
+  }
 }

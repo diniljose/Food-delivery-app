@@ -26,6 +26,9 @@ export class ResponseService {
       }
     
       handleError(res: FastifyReply, error: any, logMessage?: string): FastifyReply {
+
+        console.log("error",error);
+        
         // Map of known exception names to HTTP status codes
         const errorMap: { [key: string]: number } = {
           NotFoundException: HttpStatus.NOT_FOUND,
@@ -68,22 +71,22 @@ export class ResponseService {
       handleErrorservice(error) {
         if (error instanceof NotFoundException || error.status === 404) {
           throw new NotFoundException({
-            englishMessage: error?.response?.englishMessage || 'Resource not found',
+            englishMessage: error?.response?.message || 'Resource not found',
             arabicMessage: error?.response?.arabicMessage || 'المورد غير موجود',
           });
         } else if (error instanceof BadRequestException || error.status === 400) {
           throw new BadRequestException({
-            englishMessage: error?.response?.englishMessage || 'Bad request',
+            englishMessage: error?.response?.message || 'Bad request',
             arabicMessage: error?.response?.arabicMessage || 'طلب غير صالح',
           });
         } else if (error instanceof UnauthorizedException || error.status === 401) {
           throw new UnauthorizedException({
-            englishMessage: error?.response?.englishMessage || 'Unauthorized access',
+            englishMessage: error?.response?.message || 'Unauthorized access',
             arabicMessage: error?.response?.arabicMessage || 'دخول غير مصرح به',
           });
         } else if (error instanceof ForbiddenException || error.status === 403) {
           throw new ForbiddenException({
-            englishMessage: error?.response?.englishMessage || 'Forbidden',
+            englishMessage: error?.response?.message || 'Forbidden',
             arabicMessage: error?.response?.arabicMessage || 'ممنوع',
           });
         }
@@ -92,12 +95,12 @@ export class ResponseService {
         else if (error.name === 'MongoServerError') {
           if (error.code === 11000) {
             throw new ConflictException({
-              englishMessage: error?.response?.englishMessage || 'Duplicate key error',
+              englishMessage: error?.response?.message || 'Duplicate key error',
               arabicMessage: error?.response?.arabicMessage || 'خطأ في مفتاح مكرر',
             });
           } else {
             throw new InternalServerErrorException({
-              englishMessage: error?.response?.englishMessage || 'Database error',
+              englishMessage: error?.response?.message || 'Database error',
               arabicMessage: error?.response?.arabicMessage || 'خطأ في قاعدة البيانات',
             });
           }
@@ -119,7 +122,7 @@ export class ResponseService {
         // Generic fallback for all other errors
         else {
           throw new InternalServerErrorException({
-            englishMessage: error?.response?.englishMessage || `${error.message}`,
+            englishMessage: error?.response?.message || `${error.message}`,
             arabicMessage: error?.response?.arabicMessage || `حدث خطأ غير متوقع: ${error.message}`,
           });
         }

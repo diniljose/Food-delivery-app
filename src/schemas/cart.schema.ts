@@ -12,11 +12,11 @@ export class Cart extends Document {
   @Prop({
     type: [
       {
-        itemId: { type: String, ref: 'Item', required: true },
-        quantity: { type: Types.Decimal128, required: true }, // Changed to Decimal128
-        unitId: { type: String, ref: 'Unit', required: true },
-        price: { type: Number, required: true },
-        totalPrice: { type: Number, required: true },
+        itemId: { type: String, ref: 'Item'},
+        quantity: { type: Types.Decimal128}, // Changed to Decimal128
+        unitId: { type: String, ref: 'Unit' },
+        price: { type: Number},
+        totalPrice: { type: Number},
         customization: { type: Object },
       },
     ],
