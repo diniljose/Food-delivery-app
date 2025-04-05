@@ -34,5 +34,4 @@ export class UserSignUp extends Document {
   @Prop({ type: Date })
   otpCreatedTime: Date
 }
-
 export const UserSignUpSchema = SchemaFactory.createForClass(UserSignUp);

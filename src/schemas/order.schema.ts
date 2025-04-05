@@ -3,8 +3,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class Order extends Document {
-  @Prop({ required: true, ref: 'User' })
-  userId: string;
+
 
   @Prop({
     type: [{
@@ -54,6 +53,12 @@ export class Order extends Document {
 
   @Prop({ default: 'Pending' })
   status: string; // ('Pending', 'Accepted', 'Out for Delivery', 'Delivered')
+
+  @Prop()
+  mobileNoCountryCode: string
+
+  @Prop()
+  mobileNo: number
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

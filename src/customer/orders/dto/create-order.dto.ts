@@ -28,7 +28,7 @@ export class ItemDto {
 
 // DTO for creating an order
 export class CreateOrderDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsMongoId()
   userId: string;  // User who placed the order
 
@@ -70,6 +70,27 @@ export class CreateOrderDto {
   @IsNotEmpty()
   @IsString()
   status: string;  // Order status (e.g., 'Pending', 'Accepted', etc.)
+
+  @IsNotEmpty()
+  @IsString()
+  mobileNoCountryCode:string
+
+  @IsNotEmpty()
+  @IsNumber()
+  mobileNo:number
+}
+
+
+export class GetAllOrders {
+
+
+  @IsString()
+  @IsNotEmpty()
+  mobileNoCountryCode: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  mobileNo:number;
 }
 
 // DTO for returning an order response
@@ -77,8 +98,6 @@ export class OrderResponseDto {
   @IsMongoId()
   orderId: string;
 
-  @IsMongoId()
-  userId: string;
 
   @IsArray()
   items: ItemDto[];  // Array of items in the order

@@ -1,13 +1,12 @@
-import { IsDate, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, Length, MinLength, isString } from "class-validator";
-
+import { IsOptional, IsEmail, IsNotEmpty, IsString, Length, IsNumber, IsDate, MinLength } from "class-validator";
 
 export class AdminSignUpDto {
+  @IsOptional()
   @IsEmail()
-  @IsNotEmpty()
-  email: string;
+  email?: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   @Length(8, 32, {
     message: 'Password must be between 8 and 32 characters.',
   })
@@ -21,13 +20,13 @@ export class AdminSignUpDto {
   @IsString()
   givenName?: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  mobileNoCountryCode?: string;
+  mobileNoCountryCode: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
-  mobileNo?: number;
+  mobileNo: number;
 
   @IsOptional()
   @IsString()
@@ -46,25 +45,31 @@ export class AdminSignUpDto {
   otpCreatedTime?: Date;
 }
 
+export class AdminSignInDto {
+  @IsNotEmpty()
+  @IsString()
+  mobileNoCountryCode: string;
 
-export class AdminForgotPasswordDto{
-    @IsNotEmpty()
-    @IsEmail({}, { message: 'Please provide a valid email address.' })
-    email: string;
-  
-    @IsNotEmpty()
-    @IsString()
-    password: string;
+  @IsNotEmpty()
+  @IsNumber()
+  mobileNo: number;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(5)
+  password: string;
 }
 
-export class AdminSignInDto {
-    @IsNotEmpty()
-    @IsEmail()
-    email: string;
-  
-    @IsNotEmpty()
-    @IsString()
-    @MinLength(5) // Ensure a minimum length for the new password
-    password: string;
-  }
-  
+export class AdminForgotPasswordDto {
+  @IsNotEmpty()
+  @IsString()
+  mobileNoCountryCode: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  mobileNo: number;
+
+  @IsNotEmpty()
+  @IsString()
+  password: string;
+}
