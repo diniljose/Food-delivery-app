@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, Types } from 'mongoose';
 import { Cart } from '../../schemas/cart.schema';
 import { ItemDynamicData } from '../../schemas/dynamicItemsData.schema';
-import { UserSignUp } from 'src/schemas/user-auth.schema';
+import { UserSignUp } from '../../schemas/user-auth.schema';
 import { ResponseService } from 'src/services/response/response.service';
 
 @Injectable()

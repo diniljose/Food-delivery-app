@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/
 import { UnitsService } from './units.service';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { UpdateUnitDto } from './dto/update-unit.dto';
-import { Unit } from 'src/schemas/unit.schema';
+import { Unit } from '../../schemas/unit.schema';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 import { ResponseService } from 'src/services/response/response.service';

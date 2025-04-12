@@ -3,7 +3,6 @@ import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { Cart } from 'src/schemas/cart.schema';
 import { ResponseService } from 'src/services/response/response.service';
 
 @Controller()

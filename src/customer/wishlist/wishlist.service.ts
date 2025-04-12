@@ -3,8 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Wishlist } from '../../schemas/wishlist.schema';
 import { ResponseService } from 'src/services/response/response.service';
-import { UserSignUp } from 'src/schemas/user-auth.schema';
-import { Item } from 'src/schemas/item.schema';
+import { UserSignUp } from '../../schemas/user-auth.schema';
+import { Item } from '../../schemas/item.schema';
 
 @Injectable()
 export class WishlistService {
