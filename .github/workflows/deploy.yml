@@ -1,10 +1,10 @@
 name: Deploy NestJS app to EC2
 
 on:
-  workflow_dispatch:   # manual trigger in GitHub UI
+  workflow_dispatch:
   push:
     branches:
-      - develop       # run on pushes to develop branch
+      - develop
 
 jobs:
   deploy:
@@ -24,7 +24,7 @@ jobs:
           npm ci
           npm run build
 
-      - name: SSH key setup
+      - name: Setup SSH key
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -46,10 +46,10 @@ jobs:
             sudo systemctl stop dev.ummumeen-api || true
 
             echo "Cleaning old app files..."
-            rm -rf /home/ubuntu/system-storage/apps/dev.ummumeen-api/*
+            rm -rf /home/system-storage/apps/dev.ummumeen-api/*
 
             echo "Extracting new build..."
-            tar -xvzf /home/ubuntu/app.tar.gz -C /home/ubuntu/system-storage/apps/dev.ummumeen-api/
+            tar -xvzf /home/ubuntu/app.tar.gz -C /home/system-storage/apps/dev.ummumeen-api/
 
             echo "Starting systemd service dev.ummumeen-api..."
             sudo systemctl start dev.ummumeen-api
