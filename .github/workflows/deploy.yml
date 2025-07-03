@@ -31,7 +31,7 @@ jobs:
 
       - name: Package build folder
         run: |
-          tar -czf app.tar.gz ./dist
+          tar -czf app.tar.gz dist package.json package-lock.json
 
       - name: Upload tarball to EC2
         run: |
@@ -42,14 +42,19 @@ jobs:
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_HOST }} <<'EOF'
             set -e
 
+            cd /home/dinil-dev/system-storage/apps/dev.ummumeen-api
+
             echo "Stopping systemd service dev.ummumeen-api..."
             sudo systemctl stop dev.ummumeen-api || true
 
             echo "Cleaning old app files..."
-            rm -rf /home/dinil-dev/system-storage/apps/dev.ummumeen-api/*
+            rm -rf *
 
             echo "Extracting new build..."
-            tar -xvzf /home/ubuntu/app.tar.gz -C /home/dinil-dev/system-storage/apps/dev.ummumeen-api/
+            tar -xvzf /home/ubuntu/app.tar.gz -C /home/dinil-dev/system-storage/apps/dev.ummumeen-api
+
+            echo "Installing dependencies..."
+            npm ci --omit=dev
 
             echo "Starting systemd service dev.ummumeen-api..."
             sudo systemctl start dev.ummumeen-api
