@@ -1,10 +1,10 @@
-name: Deploy to EC2
+name: Deploy NestJS app to EC2
 
 on:
-  workflow_dispatch:     # Manual trigger in GitHub UI
-  push:                 # Trigger on any push
+  workflow_dispatch:   # manual trigger in GitHub UI
+  push:
     branches:
-      - '**'            # On all branches
+      - develop       # run on pushes to develop branch
 
 jobs:
   deploy:
@@ -14,28 +14,45 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up SSH key
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies and build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Package build folder
+        run: |
+          tar -czf app.tar.gz ./dist
+
+      - name: Upload tarball to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no app.tar.gz ubuntu@${{ secrets.SERVER_HOST }}:/home/ubuntu/
+
+      - name: SSH and deploy on EC2
         uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to EC2
+      - name: Deploy on server
         run: |
-          echo "Deploying to EC2..."
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_HOST }} <<'EOF'
             set -e
 
-            echo "Stopping service..."
+            echo "Stopping systemd service dev.ummumeen-api..."
             sudo systemctl stop dev.ummumeen-api || true
 
-            echo "Cleaning deploy directory..."
+            echo "Cleaning old app files..."
             rm -rf /home/ubuntu/system-storage/apps/dev.ummumeen-api/*
 
-            echo "Extracting new release..."
-            # Add your tarball extraction or deployment commands here if needed
+            echo "Extracting new build..."
+            tar -xzf /home/ubuntu/app.tar.gz -C /home/ubuntu/system-storage/apps/dev.ummumeen-api/
 
-            echo "Starting service..."
+            echo "Starting systemd service dev.ummumeen-api..."
             sudo systemctl start dev.ummumeen-api
 
-            echo "Deployment done!"
+            echo "Deployment complete!"
           EOF
