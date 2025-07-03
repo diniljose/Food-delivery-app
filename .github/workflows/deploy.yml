@@ -1,97 +1,58 @@
-name: CI/CD Pipeline
+name: Deploy NestJS app to EC2
 
 on:
-  pull_request:
+  workflow_dispatch:   # manual trigger in GitHub UI
+  push:
     branches:
-      - develop
-
-env:
-  SERVICE_NAME: ummumeen-api
-  DEPLOY_LOCATION_DEV: /home/ubuntu/system-storage/apps/dev.ummumeen-api
-  RELEASE_LOCATION: /home/ubuntu/system-storage/releases
+      - develop       # run on pushes to develop branch
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    if: github.event.pull_request.base.ref == 'develop' && 
-        startsWith(github.event.head_commit.message, '') # We can’t directly match regex on commit message in GH Actions triggers, but you can refine here or in workflow_dispatch.
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 20.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Cache node_modules and dist
-        uses: actions/cache@v3
-        with:
-          path: |
-            node_modules
-            dist
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
-
-    if: github.event.pull_request.base.ref == 'develop' && 
-        (contains(github.event.head_commit.message, 'build') || 
-         contains(github.event.head_commit.message, 'alpha') || 
-         contains(github.event.head_commit.message, 'beta') || 
-         contains(github.event.head_commit.message, 'rc'))
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Setup Node.js 20.x
+      - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: 18
 
-      - name: Install dependencies
-        run: npm install -g nexe
+      - name: Install dependencies and build
+        run: |
+          npm ci
+          npm run build
 
-      - name: Build binary with nexe
-        run: nexe dist/src/main.js -o ${{ env.SERVICE_NAME }}_build -t x64-20
+      - name: Package build folder
+        run: |
+          tar -czf app.tar.gz ./dist
 
-      - name: Archive binary
-        run: tar -czf ${{ env.SERVICE_NAME }}_build.tar ${{ env.SERVICE_NAME }}_build
+      - name: Upload tarball to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no app.tar.gz ubuntu@${{ secrets.SERVER_HOST }}:/home/ubuntu/
 
-      - name: Copy archive to remote server
-        uses: appleboy/scp-action@v0.1.4
+      - name: SSH and deploy on EC2
+        uses: webfactory/ssh-agent@v0.8.0
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ubuntu
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          source: ${{ env.SERVICE_NAME }}_build.tar
-          target: ~
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy on remote server
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ubuntu
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            sudo systemctl stop dev.${{ env.SERVICE_NAME }}
-            sudo cp ${{ env.SERVICE_NAME }}_build.tar ${{ env.RELEASE_LOCATION }}
-            cd ${{ env.DEPLOY_LOCATION_DEV }}
-            unlink dev-${{ env.SERVICE_NAME }}
-            rm -rf *
-            tar -xzf ${{ env.RELEASE_LOCATION }}/${{ env.SERVICE_NAME }}_build.tar
-            ln -s ${{ env.DEPLOY_LOCATION_DEV }}/${{ env.SERVICE_NAME }}_build dev-${{ env.SERVICE_NAME }}
-            rm -f ~/${{ env.SERVICE_NAME }}_build.tar
-            sudo systemctl start dev.${{ env.SERVICE_NAME }}
+      - name: Deploy on server
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_HOST }} <<'EOF'
+            set -e
+
+            echo "Stopping systemd service dev.ummumeen-api..."
+            sudo systemctl stop dev.ummumeen-api || true
+
+            echo "Cleaning old app files..."
+            rm -rf /home/ubuntu/system-storage/apps/dev.ummumeen-api/*
+
+            echo "Extracting new build..."
+            tar -xzf /home/ubuntu/app.tar.gz -C /home/ubuntu/system-storage/apps/dev.ummumeen-api/
+
+            echo "Starting systemd service dev.ummumeen-api..."
+            sudo systemctl start dev.ummumeen-api
+
+            echo "Deployment complete!"
+          EOF
