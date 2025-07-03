@@ -1,8 +1,10 @@
 name: Deploy to EC2
 
 on:
-  workflow_dispatch   # allows you to trigger it manually in GitHub UI
-  push                # also runs on every push
+  workflow_dispatch:   # allows you to trigger it manually in GitHub UI
+  push:                # also runs on every push
+    branches:
+      - '**'
 
 jobs:
   deploy:
