@@ -24,6 +24,11 @@ jobs:
           npm ci
           npm run build
 
+      - name: SSH key setup
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Package build folder
         run: |
           tar -czf app.tar.gz ./dist
@@ -31,11 +36,6 @@ jobs:
       - name: Upload tarball to EC2
         run: |
           scp -o StrictHostKeyChecking=no app.tar.gz ubuntu@${{ secrets.SERVER_HOST }}:/home/ubuntu/
-
-      - name: SSH and deploy on EC2
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy on server
         run: |
