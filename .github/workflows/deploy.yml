@@ -37,7 +37,7 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no app.tar.gz ubuntu@${{ secrets.SERVER_HOST }}:/home/ubuntu/
 
-      - name: Deploy on server
+      - name: Deploy on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_HOST }} <<'EOF'
             set -e
@@ -49,7 +49,7 @@ jobs:
             rm -rf /home/ubuntu/system-storage/apps/dev.ummumeen-api/*
 
             echo "Extracting new build..."
-            tar -xzf /home/ubuntu/app.tar.gz -C /home/ubuntu/system-storage/apps/dev.ummumeen-api/
+            tar -xvzf /home/ubuntu/app.tar.gz -C /home/ubuntu/system-storage/apps/dev.ummumeen-api/
 
             echo "Starting systemd service dev.ummumeen-api..."
             sudo systemctl start dev.ummumeen-api
