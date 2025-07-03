@@ -46,10 +46,10 @@ jobs:
             sudo systemctl stop dev.ummumeen-api || true
 
             echo "Cleaning old app files..."
-            rm -rf /home/system-storage/apps/dev.ummumeen-api/*
+            rm -rf /home/dinil-dev/system-storage/apps/dev.ummumeen-api/*
 
             echo "Extracting new build..."
-            tar -xvzf /home/ubuntu/app.tar.gz -C /home/system-storage/apps/dev.ummumeen-api/
+            tar -xvzf /home/ubuntu/app.tar.gz -C /home/dinil-dev/system-storage/apps/dev.ummumeen-api/
 
             echo "Starting systemd service dev.ummumeen-api..."
             sudo systemctl start dev.ummumeen-api
